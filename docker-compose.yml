@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+    nginx:
+        container_name: rodo_list_nginx
+        image: nginx:alpine
+        ports:
+            - 80:80
+        links:
+            - php
+        volumes:
+            - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+            - .:/var/www
+    php:
+        container_name: rodo_list_php
+        build: docker/php
+        links:
+            - mysql
+        volumes:
+            - .:/var/www
+    mysql:
+        container_name: todo_list_mysql
+        image: mysql:5.7
+        ports:
+            - 3306:3306
+        volumes:
+            - ./docker/mysql/local.cnf:/etc/mysql/conf.d/local.cnf
+        environment:
+            MYSQL_ROOT_PASSWORD: very-secret
+            MYSQL_DATABASE: todo_list
+            MYSQL_USER: owo
+            MYSQL_PASSWORD: secret

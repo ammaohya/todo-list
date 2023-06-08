@@ -4,10 +4,13 @@
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
-
 require('./bootstrap');
+import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 
 window.Vue = require('vue');
+
+Vue.use(BootstrapVue)
+Vue.use(IconsPlugin)
 
 /**
  * The following block of code may be used to automatically register your
@@ -21,6 +24,10 @@ window.Vue = require('vue');
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+//Vue.component('add-todo-component', require('./components/AddTodoComponent.vue').default);
+//Vue.component('todo-list-component', require('./components/TodoListComponent.vue').default);
+Vue.component('todo-app-component', require('./components/TodoAppComponent.vue').default);
+
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
