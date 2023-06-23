@@ -23,9 +23,6 @@ Vue.use(IconsPlugin)
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-//Vue.component('add-todo-component', require('./components/AddTodoComponent.vue').default);
-//Vue.component('todo-list-component', require('./components/TodoListComponent.vue').default);
 Vue.component('todo-app-component', require('./components/TodoAppComponent.vue').default);
 
 

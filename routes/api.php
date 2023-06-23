@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Http\Request;
-use App\Models\Todo;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -18,6 +18,6 @@ Route::post('todo', 'TodoController@add');
 Route::put('todo/{id}', 'TodoController@update');
 Route::delete('todo/{id}', 'TodoController@remove');
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::get('/user', function (Request $request) {
     return $request->user();
 });

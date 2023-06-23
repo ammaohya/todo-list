@@ -29,5 +29,3 @@ DELETE http://{your ip}/api/todo/{id}
 ```
 sudo chmod o+w ./storage/ -R
 ```
-
-
