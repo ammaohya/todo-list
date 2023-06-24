@@ -29,3 +29,9 @@ DELETE http://{your ip}/api/todo/{id}
 ```
 sudo chmod o+w ./storage/ -R
 ```
+
+### 實作lock機制 and 阻擋非鎖定操作者
+在todo加上lock_operator_id去辨別todo目前被誰鎖定,並在PUT API新增阻擋,不同operator的話不可操作,且在veiw將操作按鈕隱藏
+
+### 多個操作者鎖定同任務衝突
+會加上樂觀鎖機制, 在todo table加上version控制,並加以log去做紀錄
