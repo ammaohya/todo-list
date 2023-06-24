@@ -27,10 +27,16 @@
                     <span>{{ todo.updated_at }}</span>
                 </td>
                 <td class="align-middle">
-                    <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Edit" @click="chileToggleEditModal(todo)"><i
+                    <a v-if="displayTool(todo)" href="#!" data-toggle="tooltip" data-placement="bottom" title="Edit" @click="chileToggleEditModal(todo)"><i
                             class="bi bi-pencil-square"></i></a>
-                    <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Remove" @click="chileToggleDeleteModal(todo)" style="color:#ff9800;"><i
+                    <a v-if="displayTool(todo)" href="#!" data-toggle="tooltip" data-placement="bottom" title="Remove" @click="chileToggleDeleteModal(todo)" style="color:#ff9800;"><i
                             class="bi bi-trash-fill"></i></a>
+                    <a v-if="displayLock(todo)" href="#!" data-toggle="tooltip" data-placement="bottom" title="Lock" @click="handleLock(todo)" style="color:#ffc400;"><i
+                            class="bi bi-lock-fill"></i></a>
+                    <a v-if="displayUnLock(todo)" href="#!" data-toggle="tooltip" data-placement="bottom" title="Unlock" @click="handleUnLock(todo)" style="color:#00ff99;"><i
+                            class="bi bi-unlock-fill"></i></a>
+                    <a v-if="displayLockByOther(todo)" href="#!" data-toggle="tooltip" data-placement="bottom" title="Already locked by other user" style="color:rgb(255, 81, 0);"><i
+                            class="bi bi-lock-fill"></i></a>
                 </td>
             </tr>
         </tbody>
@@ -43,7 +49,8 @@ export default {
         setTodoData: Function,
         toggleEditModal: Function,
         toggleDeleteModal: Function,
-        todos: Array
+        todos: Array,
+        getTodos: Function
     },
 
     data() {
@@ -59,8 +66,13 @@ export default {
                 content: '',
                 priority: '',
                 status: ''
-            }
+            },
+            operatorId: null,
         }
+    },
+
+    created() {
+        this.getOperator()
     },
 
     watch: {
@@ -70,6 +82,46 @@ export default {
     },
 
     methods: {
+        getOperator(){
+            fetch('/api/user')
+                .then(response => response.json())
+                .then(response => {
+                    this.operatorId = response.data.id;
+                })
+                .catch(err => console.log(err));
+        },
+        displayTool(todo){
+            if (!todo.lock_operator_id) {
+                return true
+            }
+
+            if (todo.lock_operator_id == this.operatorId) {
+                return true
+            }
+
+            return false
+        },
+        displayLock(todo){
+            if (!todo.lock_operator_id) {
+                return true
+            }
+
+            return false
+        },
+        displayUnLock(todo){
+            if (todo.lock_operator_id && todo.lock_operator_id == this.operatorId) {
+                return true
+            }
+
+            return false
+        },
+        displayLockByOther(todo){
+            if (todo.lock_operator_id && todo.lock_operator_id != this.operatorId) {
+                return true
+            }
+
+            return false
+        },
         getPriorityClass(todoStatus) {
             switch (todoStatus) {
                 case "High":
@@ -93,7 +145,43 @@ export default {
         chileToggleDeleteModal(todo) {
             this.setTodoData(todo.id, todo.title, todo.content, todo.priority, todo.status)
             this.toggleDeleteModal()
-        }
+        },
+        handleLock(todo) {
+            const headers = {
+                "Content-Type": "application/json",
+            }
+            fetch(`/api/todo/${ todo.id }/lock`, {
+                method: 'PUT',
+                headers: headers,
+                body: {},
+            })
+                .then(response => {
+                    if (response.ok) {
+                        this.getTodos()
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        },
+        handleUnLock(todo) {
+            const headers = {
+                "Content-Type": "application/json",
+            }
+            fetch(`/api/todo/${ todo.id }/unlock`, {
+                method: 'PUT',
+                headers: headers,
+                body: {},
+            })
+                .then(response => {
+                    if (response.ok) {
+                        this.getTodos()
+                    }
+                })
+                .catch(err => {
+                    console.log(err)
+                });
+        },
     }
 };
 </script>

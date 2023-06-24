@@ -17,7 +17,8 @@ Route::get('todos', 'TodoController@listing');
 Route::post('todo', 'TodoController@add');
 Route::put('todo/{id}', 'TodoController@update');
 Route::delete('todo/{id}', 'TodoController@remove');
+Route::put('todo/{id}/lock', 'TodoController@lock');
+Route::put('todo/{id}/unlock', 'TodoController@unlock');
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::get('users', 'UserController@listing');
+Route::get('user', 'UserController@getOne');

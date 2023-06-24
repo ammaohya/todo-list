@@ -17,7 +17,7 @@
                                 <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Refresh Todo" @click="getTodos" style="color:#fbfbfb;"><i
                                     class="bi bi-arrow-clockwise"></i></a>
                             </div>
-                            <TodoListComponent :todos="todos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
+                            <TodoListComponent :todos="todos" :getTodos="getTodos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
                         </div>
                     </div>
                 </div>

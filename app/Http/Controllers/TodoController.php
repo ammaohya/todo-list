@@ -12,7 +12,7 @@ use Validator;
 class TodoController extends BaseController
 {
    /**
-    * @return array
+    * @return \Illuminate\Http\Response
     */
    public function listing()
    {
@@ -25,7 +25,7 @@ class TodoController extends BaseController
    /**
     * @param Request $request
     *
-    * @return string
+    * @return \Illuminate\Http\Response
     */
     public function add(Request $request)
     {
@@ -54,7 +54,7 @@ class TodoController extends BaseController
     * @param Request $request
     * @param int $id
     *
-    * @return string
+    * @return \Illuminate\Http\Response
     */
     public function update(Request $request, int $id)
     {
@@ -81,6 +81,10 @@ class TodoController extends BaseController
             return $this->sendError('Todo not found.');
         }
 
+        if ($todo->lock_operator_id && $todo->lock_operator_id != Auth::id()) {
+            return $this->sendError('Locked operator and operator not the same person.');
+        }
+
         $todo->title = $request->title;
         $todo->content = $request->content;
         $todo->priority = $request->priority;
@@ -93,7 +97,7 @@ class TodoController extends BaseController
     /**
     * @param int $id
     *
-    * @return string
+    * @return \Illuminate\Http\Response
     */
     public function remove($id)
     {
@@ -103,7 +107,61 @@ class TodoController extends BaseController
             return $this->sendError('Todo not found.');
         }
 
+        if ($todo->lock_operator_id && $todo->lock_operator_id != Auth::id()) {
+            return $this->sendError('Locked operator and operator not the same person.');
+        }
+
         $todo->delete();
+ 
+        return $this->sendResponse('ok');
+    }
+
+    /**
+    * @param int $id
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function lock($id)
+    {
+        $todo = Todo::find($id);
+
+        if (is_null($todo)) {
+            return $this->sendError('Todo not found.');
+        }
+
+        if (!is_null($todo->lock_operator_id)) {
+            return $this->sendError('Todo already locked.');
+        }
+
+        $todo->lock_operator_id = Auth::id();
+        $todo->save();
+ 
+        return $this->sendResponse('ok');
+    }
+
+    /**
+    * @param int $id
+    *
+    * @return \Illuminate\Http\Response
+    */
+    public function unlock($id)
+    {
+        $todo = Todo::find($id);
+
+        if (is_null($todo)) {
+            return $this->sendError('Todo not found.');
+        }
+
+        if (is_null($todo->lock_operator_id)) {
+            return $this->sendError('Todo already unlocked.');
+        }
+
+        if ($todo->lock_operator_id && $todo->lock_operator_id != Auth::id()) {
+            return $this->sendError('Locked operator and operator not the same person.');
+        }
+
+        $todo->lock_operator_id = null;
+        $todo->save();
  
         return $this->sendResponse('ok');
     }

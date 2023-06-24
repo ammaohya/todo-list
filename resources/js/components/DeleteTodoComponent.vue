@@ -55,9 +55,6 @@ export default {
             this.$nextTick(() => {
                 this.$bvModal.hide('modal-prevent-closing')
             })
-            const headers = {
-                "Content-Type": "application/json",
-            }
             fetch(`/api/todo/${this.id}`, {
                 method: 'DELETE',
             })
