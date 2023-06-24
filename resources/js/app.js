@@ -6,11 +6,13 @@
  */
 require('./bootstrap');
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
+import Toasted from 'vue-toasted'
 
 window.Vue = require('vue');
 
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
+Vue.use(Toasted)
 
 /**
  * The following block of code may be used to automatically register your

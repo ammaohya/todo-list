@@ -55,7 +55,8 @@ export default {
         toggleDeleteModal: Function,
         todos: Array,
         getTodos: Function,
-        users: Array
+        users: Array,
+        showError: Function,
     },
 
     data() {
@@ -167,10 +168,22 @@ export default {
                 .then(response => {
                     if (response.ok) {
                         this.getTodos()
+                    } else {
+                        throw response
                     }
                 })
-                .catch(err => {
-                    console.log(err)
+                .catch(error => {
+                    if (typeof error.json === "function") {
+                        error.json().then(jsonError => {
+                            console.log(jsonError);
+                            this.showError(jsonError.message);
+                        }).catch(genericError => {
+                            this.showError("Something got wrong");
+                        });
+                    } else {
+                        console.log(error);
+                        this.showError("Something got wrong");
+                    }
                 });
         },
         handleUnLock(todo) {
@@ -185,10 +198,22 @@ export default {
                 .then(response => {
                     if (response.ok) {
                         this.getTodos()
+                    } else {
+                        throw response
                     }
                 })
-                .catch(err => {
-                    console.log(err)
+                .catch(error => {
+                    if (typeof error.json === "function") {
+                        error.json().then(jsonError => {
+                            console.log(jsonError);
+                            this.showError(jsonError.message);
+                        }).catch(genericError => {
+                            this.showError("Something got wrong");
+                        });
+                    } else {
+                        console.log(error);
+                        this.showError("Something got wrong");
+                    }
                 });
         },
         getUser(id) {

@@ -1,8 +1,8 @@
 <template>
     <div>
-        <AddTodoComponent :getTodos="getTodos" :toggleAddModal="toggleAddModal" :users="users" :addActive="addActive" :show="addShow"></AddTodoComponent>
-        <EditTodoComponent :getTodos="getTodos" :toggleEditModal="toggleEditModal" :users="users" :editActive="editActive" :show="editShow" :todoData="todoData"></EditTodoComponent>
-        <DeleteTodoComponent :getTodos="getTodos" :toggleDeleteModal="toggleDeleteModal" :deleteActive="deleteActive" :show="deleteShow" :todoData="todoData"></DeleteTodoComponent>
+        <AddTodoComponent :getTodos="getTodos" :showError="showError" :toggleAddModal="toggleAddModal" :users="users" :addActive="addActive" :show="addShow"></AddTodoComponent>
+        <EditTodoComponent :getTodos="getTodos" :showError="showError" :toggleEditModal="toggleEditModal" :users="users" :editActive="editActive" :show="editShow" :todoData="todoData"></EditTodoComponent>
+        <DeleteTodoComponent :getTodos="getTodos" :showError="showError" :toggleDeleteModal="toggleDeleteModal" :deleteActive="deleteActive" :show="deleteShow" :todoData="todoData"></DeleteTodoComponent>
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
                 <div class="col-md-12 col-xl-10">
@@ -17,7 +17,7 @@
                                 <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Refresh Todo" @click="refresh" style="color:#fbfbfb;"><i
                                     class="bi bi-arrow-clockwise"></i></a>
                             </div>
-                            <TodoListComponent :users="users" :todos="todos" :getTodos="getTodos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
+                            <TodoListComponent :users="users" :todos="todos" :showError="showError" :getTodos="getTodos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
                         </div>
                     </div>
                 </div>
@@ -68,19 +68,55 @@ export default {
     methods: {
         getUsers(){
             fetch('/api/users')
-                .then(response => response.json())
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        throw response
+                    }
+                })
                 .then(response => {
                     this.users = response.data;
                 })
-                .catch(err => console.log(err));
+                .catch(error => {
+                    if (typeof error.json === "function") {
+                        error.json().then(jsonError => {
+                            console.log(jsonError);
+                            this.showError(jsonError.message);
+                        }).catch(genericError => {
+                            this.showError("Something got wrong");
+                        });
+                    } else {
+                        console.log(error);
+                        this.showError("Something got wrong");
+                    }
+                });
         },
         getTodos() {
             fetch('/api/todos')
-                .then(response => response.json())
+                .then(response => {
+                    if (response.ok) {
+                        return response.json()
+                    } else {
+                        throw response
+                    }
+                })
                 .then(response => {
                     this.todos = response.data;
                 })
-                .catch(err => console.log(err));
+                .catch(error => {
+                    if (typeof error.json === "function") {
+                        error.json().then(jsonError => {
+                            console.log(jsonError);
+                            this.showError(jsonError.message);
+                        }).catch(genericError => {
+                            this.showError("Something got wrong");
+                        });
+                    } else {
+                        console.log(error);
+                        this.showError("Something got wrong");
+                    }
+                });
         },
         toggleAddModal() {
             const body = document.querySelector("body");
@@ -119,6 +155,14 @@ export default {
         refresh() {
             this.getTodos()
             this.getUsers()
+        },
+        showError(message) {
+            Vue.toasted.show(message, {
+                theme: "bubble",
+                position: "bottom-right",
+                type: "error",
+                duration: 5000
+            })
         }
     }
 };

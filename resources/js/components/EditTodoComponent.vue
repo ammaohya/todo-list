@@ -73,6 +73,7 @@ export default {
         todoData: Object,
         getTodos: Function,
         users: Array,
+        showError: Function,
     },
     data() {
         return {
@@ -132,10 +133,22 @@ export default {
                     if (response.ok) {
                         this.chileToggleModal()
                         this.getTodos()
+                    } else {
+                        throw response
                     }
                 })
-                .catch(err => {
-                    console.log(err)
+                .catch(error => {
+                    if (typeof error.json === "function") {
+                        error.json().then(jsonError => {
+                            console.log(jsonError);
+                            this.showError(jsonError.message);
+                        }).catch(genericError => {
+                            this.showError("Something got wrong");
+                        });
+                    } else {
+                        console.log(error);
+                        this.showError("Something got wrong");
+                    }
                 });
         },
         chileToggleModal() {
