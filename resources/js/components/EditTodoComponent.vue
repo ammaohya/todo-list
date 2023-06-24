@@ -44,6 +44,13 @@
                                     <option value="Finished">Finished</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="assign-select">Assign User</label>
+                                <select class="form-control" id="assign-select" v-model="assign">
+                                    <option :value=null v-bind:selected="selectUser(null)">Nobody</option>
+                                    <option v-for="user in users" :value="user.id" v-bind:selected="selectUser(user.id)">{{user.name}}</option>
+                                </select>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -64,7 +71,8 @@ export default {
         show: Boolean,
         toggleEditModal: Function,
         todoData: Object,
-        getTodos: Function
+        getTodos: Function,
+        users: Array,
     },
     data() {
         return {
@@ -73,12 +81,9 @@ export default {
             content: this.todoData.content,
             priority: this.todoData.priority,
             status: this.todoData.status,
+            assign: this.todoData.assign_user_id,
             isButtonDisabled: false
         };
-    },
-
-    mounted() {
-        console.log('Edit Component mounted.')
     },
 
     watch: {
@@ -88,6 +93,7 @@ export default {
             this.content = newData.content
             this.priority = newData.priority
             this.status = newData.status
+            this.assign = newData.assign_user_id
             this.checkFormValidity()
         }
     },
@@ -114,7 +120,8 @@ export default {
                 "title": this.title,
                 "content": this.content,
                 "priority": this.priority,
-                "status": this.status
+                "status": this.status,
+                "assign_user_id": this.assign
             }
             fetch(`/api/todo/${ this.id }`, {
                 method: 'PUT',
@@ -133,6 +140,13 @@ export default {
         },
         chileToggleModal() {
             this.toggleEditModal()
+        },
+        selectUser(id) {
+            if (this.assign == id) {
+                return true
+            }
+
+            return false
         }
     }
 }

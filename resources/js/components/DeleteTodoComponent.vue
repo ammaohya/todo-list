@@ -39,10 +39,6 @@ export default {
         }
     },
 
-    mounted() {
-        console.log('Delete Component mounted.')
-    },
-
     watch: {
         todoData(newData) {
             this.id = newData.id

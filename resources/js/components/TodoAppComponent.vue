@@ -1,7 +1,7 @@
 <template>
     <div>
-        <AddTodoComponent :getTodos="getTodos" :toggleAddModal="toggleAddModal" :addActive="addActive" :show="addShow"></AddTodoComponent>
-        <EditTodoComponent :getTodos="getTodos" :toggleEditModal="toggleEditModal" :editActive="editActive" :show="editShow" :todoData="todoData"></EditTodoComponent>
+        <AddTodoComponent :getTodos="getTodos" :toggleAddModal="toggleAddModal" :users="users" :addActive="addActive" :show="addShow"></AddTodoComponent>
+        <EditTodoComponent :getTodos="getTodos" :toggleEditModal="toggleEditModal" :users="users" :editActive="editActive" :show="editShow" :todoData="todoData"></EditTodoComponent>
         <DeleteTodoComponent :getTodos="getTodos" :toggleDeleteModal="toggleDeleteModal" :deleteActive="deleteActive" :show="deleteShow" :todoData="todoData"></DeleteTodoComponent>
         <div class="container py-5 h-100">
             <div class="row d-flex justify-content-center align-items-center h-100">
@@ -14,10 +14,10 @@
                                 <h2 class="my-4">Todo List</h2>
                                 <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Add Todo" @click="toggleAddModal" style="color:#4caf50;"><i
                                     class="bi bi-file-earmark-plus"></i></a>
-                                <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Refresh Todo" @click="getTodos" style="color:#fbfbfb;"><i
+                                <a href="#!" data-toggle="tooltip" data-placement="bottom" title="Refresh Todo" @click="refresh" style="color:#fbfbfb;"><i
                                     class="bi bi-arrow-clockwise"></i></a>
                             </div>
-                            <TodoListComponent :todos="todos" :getTodos="getTodos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
+                            <TodoListComponent :users="users" :todos="todos" :getTodos="getTodos" :setTodoData="setTodoData" :toggleDeleteModal="toggleDeleteModal" :toggleEditModal="toggleEditModal"></TodoListComponent>
                         </div>
                     </div>
                 </div>
@@ -42,6 +42,7 @@ export default {
     data() {
         return {
             todos: [],
+            users: [],
             addActive: false,
             addShow: false,
             editActive: false,
@@ -53,16 +54,26 @@ export default {
                 title: '',
                 content: '',
                 priority: '',
-                status: ''
+                status: '',
+                assign_user_id: null
             }
         }
     },
 
     created() {
         this.getTodos()
+        this.getUsers()
     },
 
     methods: {
+        getUsers(){
+            fetch('/api/users')
+                .then(response => response.json())
+                .then(response => {
+                    this.users = response.data;
+                })
+                .catch(err => console.log(err));
+        },
         getTodos() {
             fetch('/api/todos')
                 .then(response => response.json())
@@ -95,14 +106,19 @@ export default {
                 : body.classList.remove("modal-open");
             setTimeout(() => (this.deleteShow = !this.deleteShow), 10);
         },
-        setTodoData(id, title, content, priority, status) {
+        setTodoData(id, title, content, priority, status, assign_user_id) {
             this.todoData = {
                 id: id,
                 title: title,
                 content: content,
                 priority: priority,
                 status: status,
+                assign_user_id: assign_user_id,
             }
+        },
+        refresh() {
+            this.getTodos()
+            this.getUsers()
         }
     }
 };

@@ -5,6 +5,7 @@
                 <th scope="col">Todo</th>
                 <th scope="col">Priority</th>
                 <th scope="col">Status</th>
+                <th scope="col">Assign User</th>
                 <th scope="col">Last Update Time</th>
                 <th scope="col">Actions</th>
             </tr>
@@ -22,6 +23,9 @@
                 </td>
                 <td class="align-middle">
                     <span>{{ todo.status }}</span>
+                </td>
+                <td class="align-middle">
+                    <span>{{ getUser(todo.assign_user_id) }}</span>
                 </td>
                 <td class="align-middle">
                     <span>{{ todo.updated_at }}</span>
@@ -50,7 +54,8 @@ export default {
         toggleEditModal: Function,
         toggleDeleteModal: Function,
         todos: Array,
-        getTodos: Function
+        getTodos: Function,
+        users: Array
     },
 
     data() {
@@ -65,9 +70,10 @@ export default {
                 title: '',
                 content: '',
                 priority: '',
-                status: ''
+                assign_user_id: ''
             },
             operatorId: null,
+            userList: this.users.reduce((obj, item) => (obj[item.id] = item.name, obj) ,{})
         }
     },
 
@@ -78,6 +84,9 @@ export default {
     watch: {
         todos(newData) {
             this.todoList = newData
+        },
+        users(newData) {
+            this.userList = newData.reduce((obj, item) => (obj[item.id] = item.name, obj) ,{})
         }
     },
 
@@ -139,11 +148,11 @@ export default {
             }
         },
         chileToggleEditModal(todo) {
-            this.setTodoData(todo.id, todo.title, todo.content, todo.priority, todo.status)
+            this.setTodoData(todo.id, todo.title, todo.content, todo.priority, todo.status, todo.assign_user_id)
             this.toggleEditModal()
         },
         chileToggleDeleteModal(todo) {
-            this.setTodoData(todo.id, todo.title, todo.content, todo.priority, todo.status)
+            this.setTodoData(todo.id, todo.title, todo.content, todo.priority, todo.status, todo.assign_user_id)
             this.toggleDeleteModal()
         },
         handleLock(todo) {
@@ -182,6 +191,13 @@ export default {
                     console.log(err)
                 });
         },
+        getUser(id) {
+            if (this.userList) {
+                return this.userList[id]
+            }
+
+            return ''
+        }
     }
 };
 </script>

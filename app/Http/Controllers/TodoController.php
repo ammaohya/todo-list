@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Resources\Todo as TodoResource;
 use App\Models\Todo;
+use App\Models\User;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Auth;
 use Validator;
@@ -36,6 +37,7 @@ class TodoController extends BaseController
                 'required',
                 Rule::in(['High', 'Middle', 'Low']),
             ],
+            'assign_user_id' => 'nullable|int',
         ]);
 
         if($validator->fails()){
@@ -45,6 +47,13 @@ class TodoController extends BaseController
         $todo->title = $request->title;
         $todo->content = $request->content;
         $todo->priority = $request->priority;
+        if (!is_null($request->assign_user_id)) {
+            $user = User::find($request->assign_user_id);
+            if (is_null($user)) {
+                return $this->sendError('Assign user not found.');
+            }
+            $todo->assign_user_id = $user->id;
+        }
         $todo->save();
  
         return $this->sendResponse('ok');
@@ -69,6 +78,7 @@ class TodoController extends BaseController
                 'required',
                 Rule::in(['New', 'Ongoing', 'Pending', 'Finished']),
             ],
+            'assign_user_id' => 'nullable|int',
         ]);
 
         if($validator->fails()){
@@ -89,6 +99,15 @@ class TodoController extends BaseController
         $todo->content = $request->content;
         $todo->priority = $request->priority;
         $todo->status = $request->status;
+        if (is_null($request->assign_user_id)) {
+            $todo->assign_user_id = null;
+        } else {
+            $user = User::find($request->assign_user_id);
+            if (is_null($user)) {
+                return $this->sendError('Assign user not found.');
+            }
+            $todo->assign_user_id = $user->id;
+        }
         $todo->save();
  
         return $this->sendResponse('ok');

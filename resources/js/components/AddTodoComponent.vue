@@ -35,6 +35,13 @@
                                     <option value="High">High</option>
                                 </select>
                             </div>
+                            <div class="form-group">
+                                <label for="assign-select">Assign User</label>
+                                <select class="form-control" id="assign-select" v-model="assign">
+                                    <option selected :value=null>Nobody</option>
+                                    <option v-for="user in users" :value="user.id">{{user.name}}</option>
+                                </select>
+                            </div>
                         </form>
                     </div>
                     <div class="modal-footer">
@@ -54,19 +61,17 @@ export default {
         addActive: Boolean,
         show: Boolean,
         toggleAddModal: Function,
-        getTodos: Function
+        getTodos: Function,
+        users: Array,
     },
     data() {
         return {
             title: '',
             content: '',
             priority: 'Low',
-            isButtonDisabled: true
+            isButtonDisabled: true,
+            assign: null
         }
-    },
-
-    mounted() {
-        console.log('Add Component mounted.')
     },
 
     methods: {
@@ -83,6 +88,7 @@ export default {
             this.title = ''
             this.content = ''
             this.priority = 'Low'
+            this.assign = null
         },
         handleSubmit() {
             // Hide the modal manually
@@ -96,6 +102,7 @@ export default {
                 "title": this.title,
                 "content": this.content,
                 "priority": this.priority,
+                "assign_user_id": this.assign
             }
             fetch('/api/todo', {
                 method: 'POST',
